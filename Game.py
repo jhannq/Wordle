@@ -1,0 +1,1 @@
+# information about specific game
