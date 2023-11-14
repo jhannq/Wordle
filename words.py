@@ -1,10 +1,10 @@
 # parses command line and starts the guessing game
 
-from guess import Guess
+from Guess import Guess
 # import game import Game
-from stringdatabase import StringDatabase
+from StringDatabase import StringDatabase
 
 db = StringDatabase()
 randomWord = db.generateRandomWord()
-g = Guess(word=randomWord)
+g = Guess()
 g.readInput()
