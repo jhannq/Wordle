@@ -2,12 +2,8 @@
 import random
 
 class StringDatabase:
-    def readFile(self):
+    def generateRandomWord(self):
         with open("four_letters.txt", "r") as file:
             words = file.read().split()
-        # print(words)
-        print("Randomly selected word: " + random.choice(words))
+        return random.choice(words)
 
-db = StringDatabase()
-
-db.readFile()

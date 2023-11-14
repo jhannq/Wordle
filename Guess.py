@@ -1,30 +1,53 @@
+import os
 # menu display, user input, scoring logic
+        
 class Guess: 
-    def displayMenu(self):
+    def __init__(self, word):
+        self.word = word
+
+    def displayStart(self):
         print("++")
         print("++ The Great Guessing Game")
         print("++")
-        print("\n")
-        print("Current Guess: " + "----")
-        print("Letters Guessed: ")
         
     def readInput(self):
-        print("g = guess, t = tell me, l for letter, and q to quit")
-        userInput = input("Enter Option:")
-        while userInput not in ("g", "t", "l", "q"):
-            print("Invalid option. Please re-enter:")
-            userInput = input("Enter Option:")
-        if userInput == "g":
-            print("Guess: attempt to guess the word")
-        elif userInput == "t":
-            print("Tell	me:	you	give up and	ask	the	game to	simply show you	the	correct	word")
-        elif userInput == "l":
-            print("Letter: select an individual	letter that	might be in	the	word")
-        elif userInput == "q":
-            print("Quit: end the game session and display a final report (more on this below)")
+        userInput = ""
+        while userInput != "q":
+            self.displayStart()
 
+            print("\nCurrent Word: " + self.word)
+            print("Current Guess: " + "----")
+            print("Letters Guessed: \n")
 
-g = Guess()
-g.displayMenu()
-g.readInput()
+            print("g = guess, t = tell me, l for letter, and q to quit\n")
+            userInput = input("Enter Option: ")
+            
+            while userInput not in ("g", "t", "l", "q"):
+                userInput = input("\nInvalid option. Please re-enter: ")
+            
+            if userInput == "g":
+                guess = input("\nGuess: ")
+            
+            elif userInput == "t":
+                print("\nTell	me:	")
+
+            elif userInput == "l":
+                letter = input("\nLetter: ").lower()
+                if letter in self.word:
+                    self.displayLetter(True)
+                else:
+                    self.displayLetter(False)
+
+    def displayLetter(self, check):
+        print("@@")
+        if check == True:
+            print("@@ FEEDBACK: Woo hoo, you found 1 letter")
+        else:
+            print("@@ FEEDBACK: Not a single match, genius")
+        print("@@\n")
+        input("Press any key to continue...")
+        os.system('clear')
+    
+    
+
 
