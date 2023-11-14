@@ -17,7 +17,7 @@ class Guess:
         print("++ The Great Guessing Game")
         print("++")
         
-    def readInput(self):
+    def startGame(self):
         userInput = ""
         while userInput != "q":
             self.displayGameTitle()

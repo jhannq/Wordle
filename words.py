@@ -7,4 +7,4 @@ from StringDatabase import StringDatabase
 db = StringDatabase()
 randomWord = db.generateRandomWord()
 g = Guess()
-g.readInput()
+g.startGame()
