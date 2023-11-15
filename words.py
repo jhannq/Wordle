@@ -7,4 +7,5 @@ import sys
 db = StringDatabase()
 randomWord = db.generateRandomWord()
 g = Guess()
-g.startGame(sys.argv[1])
+mode = sys.argv[1]
+g.startGame(mode)

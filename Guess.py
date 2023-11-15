@@ -49,8 +49,12 @@ class Guess:
                         break
                 # if the letter is in the word, display it on the current guess
                 if letter in self.currentWord:
-                    index = self.currentWord.index(letter)
-                    self.currentGuess[index] = letter
+                    indexes = []
+                    for index, letters in enumerate(self.currentWord):
+                        if letters == letter:
+                            indexes.append(index)
+                    for index in indexes:
+                        self.currentGuess[index] = letter
                     # if the player has guessed all the letters, display message and give a new word
                     if ''.join(map(str, self.currentGuess)) == self.currentWord:
                         self.displayGuessMessage(True)
@@ -128,5 +132,3 @@ class Guess:
         print("@@\n")
         input("Press any key to continue... ")
         os.system('clear')
-
-
