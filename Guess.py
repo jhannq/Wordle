@@ -1,5 +1,6 @@
 import os
 from StringDatabase import StringDatabase
+from Game import Game
 # menu display, user input, scoring logic
         
 class Guess: 
@@ -9,6 +10,7 @@ class Guess:
         self.currentWord = self.db.generateRandomWord()
         self.currentGuess = ["-", "-", "-", "-"]
         self.lettersGuessed = []
+        self.incorrectGuesses = 0
 
     # start the game loop
     def startGame(self, mode):
@@ -29,9 +31,11 @@ class Guess:
                 # display a message, give a new word if the guess is correct
                 if guess == self.currentWord:
                     self.displayGuessMessage(True)
+                    self.calculateScore()
                     self.restart()
                 else:
                     self.displayGuessMessage(False)
+                    self.incorrectGuesses += 1
 
             # tells player the word and gives a new word
             elif userInput == "t":
@@ -58,6 +62,7 @@ class Guess:
                     # if the player has guessed all the letters, display message and give a new word
                     if ''.join(map(str, self.currentGuess)) == self.currentWord:
                         self.displayGuessMessage(True)
+                        self.calculateScore()
                         self.restart()
                     else:
                         self.displayLetterMessage(True)
@@ -66,6 +71,8 @@ class Guess:
                 else:
                     self.lettersGuessed.append(letter)
                     self.displayLetterMessage(False)
+        game = Game()
+        game.displayGameReport()
     
     # display game information such as current word, current guess and letters guessed
     def displayGameInformation(self, mode):
@@ -80,13 +87,13 @@ class Guess:
             print("Current Guess: " + ''.join(map(str, self.currentGuess)))
             print("Letters Guessed: " + ' '.join(map(str, self.lettersGuessed)) + "\n")
     
-    
     # restart the game by giving a new random word, empties current guess and letters guessed
     def restart(self):
         self.currentGuess = ["-", "-", "-", "-"]
         self.lettersGuessed = []
         randomWord = self.db.generateRandomWord()
         self.setCurrentWord(randomWord)
+        self.incorrectGuesses = 0
     
     # set a new current word
     def setCurrentWord(self, newCurrentWord):
@@ -125,10 +132,17 @@ class Guess:
         print("@@\n")
         input("Press any key to continue... ")
         os.system('clear')
-    
-    def displayCurrentWord(self):
-        print("\n@@")
-        print("@@ FEEDBACK: You're right, Einstein! The word was '" + self.currentWord + "'")
-        print("@@\n")
-        input("Press any key to continue... ")
-        os.system('clear')
+
+    # score = ((sumFrequencies - lettersGuessedFrequencies) / len(lettersGuessed)) * (incorrectGuesses*0.1)
+    def calculateScore(self):
+        letterFrequencies = {'a': 8.17, 'b': 1.49, 'c': 2.78, 'd': 4.25, 'e': 12.70, 'f': 2.23, 'g': 2.02, 'h': 6.09,
+                     'i': 6.97, 'j': 0.15, 'k': 0.77, 'l': 4.03, 'm': 2.41, 'n': 6.75, 'o': 7.51, 'p': 1.93,
+                     'q': 0.10, 'r': 5.99, 's': 6.33, 't': 9.06, 'u': 2.76, 'v': 0.98, 'w': 2.36, 'x': 0.15,
+                     'y': 1.97, 'z': 0.07}
+        sumFrequencies = 100
+        lettersGuessedFrequencies = sum(letterFrequencies[letter] for letter in self.lettersGuessed)
+        if len(self.lettersGuessed) == 0:
+            score = 100
+        else:
+            score = ((sumFrequencies - lettersGuessedFrequencies) / len(self.lettersGuessed)) - (((sumFrequencies - lettersGuessedFrequencies) / len(self.lettersGuessed)) * (self.incorrectGuesses*0.1))
+        print(round(score,2))
