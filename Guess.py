@@ -17,6 +17,7 @@ class Guess:
         userInput = ""
         # end game when user inputs "q"
         while userInput != "q":
+            # display based on test or play mode
             self.displayGameInformation(mode)
 
             # ask for options, keep asking until input is valid
@@ -27,7 +28,7 @@ class Guess:
             
             # player wants to guess
             if userInput == "g":
-                guess = input("\nMake you guess: ").lower()
+                guess = input("\nMake your guess: ").lower()
                 # display a message, give a new word if the guess is correct
                 if guess == self.currentWord:
                     self.displayGuessMessage(True)
@@ -133,7 +134,7 @@ class Guess:
         input("Press any key to continue... ")
         os.system('clear')
 
-    # score = ((sumFrequencies - lettersGuessedFrequencies) / len(lettersGuessed)) * (incorrectGuesses*0.1)
+    # score = ((sumFrequencies - lettersGuessedFrequencies) / len(lettersGuessed)) - (incorrectGuesses*0.1)
     def calculateScore(self):
         letterFrequencies = {'a': 8.17, 'b': 1.49, 'c': 2.78, 'd': 4.25, 'e': 12.70, 'f': 2.23, 'g': 2.02, 'h': 6.09,
                      'i': 6.97, 'j': 0.15, 'k': 0.77, 'l': 4.03, 'm': 2.41, 'n': 6.75, 'o': 7.51, 'p': 1.93,
@@ -142,7 +143,7 @@ class Guess:
         sumFrequencies = 100
         lettersGuessedFrequencies = sum(letterFrequencies[letter] for letter in self.lettersGuessed)
         if len(self.lettersGuessed) == 0:
-            score = 100
+            score = ((sumFrequencies - lettersGuessedFrequencies)) - (((sumFrequencies - lettersGuessedFrequencies)) * (self.incorrectGuesses*0.1))
         else:
             score = ((sumFrequencies - lettersGuessedFrequencies) / len(self.lettersGuessed)) - (((sumFrequencies - lettersGuessedFrequencies) / len(self.lettersGuessed)) * (self.incorrectGuesses*0.1))
         print(round(score,2))
