@@ -1,4 +1,3 @@
-# responsible for disk I/O and random selection of the word for a new game
 import random
 
 class StringDatabase:
