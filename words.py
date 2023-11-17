@@ -9,5 +9,8 @@ db = StringDatabase()
 randomWord = db.generateRandomWord()
 g = Guess()
 mode = sys.argv[1]
-g.startGame(mode)
+if mode == "play" or mode == "test":
+    g.startGame(mode)
+else:
+    print("Invalid mode. Enter 'play' or 'test'")
 
