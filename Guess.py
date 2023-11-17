@@ -1,7 +1,6 @@
 import os
 from StringDatabase import StringDatabase
 from Game import Game
-# menu display, user input, scoring logic
         
 class Guess: 
     # initialize class with a word, empty current guess and letters guessed
@@ -150,7 +149,7 @@ class Guess:
         input("Press any key to continue... ")
         os.system('clear')
 
-    # score = ((sumFrequencies - lettersGuessedFrequencies) / len(lettersGuessed)) - (incorrectGuesses*0.1)
+    # calculate score
     def calculateScore(self, condition):
         score = 0
         letterFrequencies = {'a': 8.17, 'b': 1.49, 'c': 2.78, 'd': 4.25, 'e': 12.70, 'f': 2.23, 'g': 2.02, 'h': 6.09,
