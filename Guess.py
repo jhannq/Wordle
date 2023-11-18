@@ -9,14 +9,14 @@ class Guess:
         self.currentWord = self.db.generateRandomWord()
         self.currentGuess = ["-", "-", "-", "-"]
         self.lettersGuessed = []
-        self.listOfWords = [self.currentWord]
-        self.listOfStatus = []
-        self.incorrectGuesses = 0
-        self.incorrectLetters = 0
-        self.listOfIncorrectGuesses = []
-        self.listOfIncorrectLetters = []
-        self.listOfScores = []
-        self.currentScore = 0
+        self.badGuesses = 0
+        self.missedLetters = 0
+        self.score = 0
+        self.listOfGames = []
+        self.letterFrequencies = {'a': 8.17, 'b': 1.49, 'c': 2.78, 'd': 4.25, 'e': 12.70, 'f': 2.23, 'g': 2.02, 'h': 6.09,
+                     'i': 6.97, 'j': 0.15, 'k': 0.77, 'l': 4.03, 'm': 2.41, 'n': 6.75, 'o': 7.51, 'p': 1.93,
+                     'q': 0.10, 'r': 5.99, 's': 6.33, 't': 9.06, 'u': 2.76, 'v': 0.98, 'w': 2.36, 'x': 0.15,
+                     'y': 1.97, 'z': 0.07, '-': 0}
 
     # start the game loop
     def startGame(self, mode):
@@ -38,18 +38,16 @@ class Guess:
                 # display a message, give a new word if the guess is correct
                 if guess == self.currentWord:
                     self.displayGuessMessage(True)
-                    self.listOfScores.append(self.calculateScore("win"))
-                    self.listOfStatus.append("Success")
+                    self.calculateScoreWin()
                     self.restart()
                 else:
                     self.displayGuessMessage(False)
-                    self.incorrectGuesses += 1
+                    self.badGuesses += 1
 
             # tells player the word and gives a new word
             elif userInput == "t":
                 self.displayTellMessage()
-                self.listOfScores.append(self.calculateScore("lose"))
-                self.listOfStatus.append("Gave Up")
+                self.calculateScoreLose()
                 self.restart()
 
             # ask player for letter
@@ -72,20 +70,17 @@ class Guess:
                     # if the player has guessed all the letters, display message and give a new word
                     if ''.join(map(str, self.currentGuess)) == self.currentWord:
                         self.displayGuessMessage(True)
-                        self.listOfScores.append(self.calculateScore("win"))
-                        self.listOfStatus.append("Success")
+                        self.calculateScoreWin()
                         self.restart()
                     else:
                         self.displayLetterMessage(True)
-                    
                 # if the letter is not in the word, display it in the guessed letters
                 else:
                     self.lettersGuessed.append(letter)
                     self.displayLetterMessage(False)
-                    self.incorrectLetters += 1
-        game = Game()
-        game.displayGameReport(self.listOfWords, self.listOfStatus, self.listOfIncorrectGuesses, self.listOfIncorrectLetters, self.listOfScores)
-    
+                    self.missedLetters += 1
+        self.displayGameReport()
+
     # display game information such as current word, current guess and letters guessed
     def displayGameInformation(self, mode):
         print("++")
@@ -105,11 +100,9 @@ class Guess:
         self.lettersGuessed = []
         randomWord = self.db.generateRandomWord()
         self.setCurrentWord(randomWord)
-        self.listOfWords.append(randomWord)
-        self.listOfIncorrectLetters.append(self.incorrectLetters)
-        self.listOfIncorrectGuesses.append(self.incorrectGuesses)
-        self.incorrectGuesses = 0
-        self.incorrectLetters = 0
+        self.badGuesses = 0
+        self.missedLetters = 0
+        self.score = 0
     
     # set a new current word
     def setCurrentWord(self, newCurrentWord):
@@ -148,22 +141,50 @@ class Guess:
         print("@@\n")
         input("Press any key to continue... ")
         os.system('clear')
-
-    # calculate score
-    def calculateScore(self, condition):
-        score = 0
-        letterFrequencies = {'a': 8.17, 'b': 1.49, 'c': 2.78, 'd': 4.25, 'e': 12.70, 'f': 2.23, 'g': 2.02, 'h': 6.09,
-                     'i': 6.97, 'j': 0.15, 'k': 0.77, 'l': 4.03, 'm': 2.41, 'n': 6.75, 'o': 7.51, 'p': 1.93,
-                     'q': 0.10, 'r': 5.99, 's': 6.33, 't': 9.06, 'u': 2.76, 'v': 0.98, 'w': 2.36, 'x': 0.15,
-                     'y': 1.97, 'z': 0.07}
-        sumFrequencies = 100
-        lettersGuessedFrequencies = sum(letterFrequencies[letter] for letter in self.lettersGuessed)
-        if len(self.lettersGuessed) == 0:
-            score = ((sumFrequencies - lettersGuessedFrequencies)) - (((sumFrequencies - lettersGuessedFrequencies)) * (self.incorrectGuesses*0.1))
+    
+    # calculate score when player wins
+    def calculateScoreWin(self):
+        totalFrequencyOfWord = 0
+        sumFrequencyOfGuess = 0
+        # player wins without using letters
+        if self.currentGuess == ["-", "-", "-", "-"]:
+            totalFrequencyOfWord = sum(self.letterFrequencies[letter] for letter in self.currentWord)
+            self.score = round(totalFrequencyOfWord,2)
+        # player wins using letters and guesses
         else:
-            score = (sumFrequencies - lettersGuessedFrequencies) / (len(self.lettersGuessed)) - (((sumFrequencies - lettersGuessedFrequencies) / len(self.lettersGuessed)) * (self.incorrectGuesses*0.1))
-        if condition == "win":
-            score = (round(score,2))
-        else:
-            score = round(-1 * score, 2)
-        return score
+            totalFrequencyOfWord = sum(self.letterFrequencies[letter] for letter in self.currentWord)
+            sumFrequencyOfGuess = sum(self.letterFrequencies[letter] for letter in self.currentGuess)
+            # avoid division by 0
+            if self.missedLetters == 0:
+                self.score = round(((totalFrequencyOfWord - sumFrequencyOfGuess)) - (((totalFrequencyOfWord - sumFrequencyOfGuess)) * (self.badGuesses * 0.1)),2)
+            else:
+                self.score = round(((totalFrequencyOfWord - sumFrequencyOfGuess) / self.missedLetters) - (((totalFrequencyOfWord - sumFrequencyOfGuess) / self.missedLetters) * (self.badGuesses * 0.1)),2)
+        game = Game(self.currentWord, "Success", self.badGuesses, self.missedLetters, self.score)
+        self.listOfGames.append(game)
+    
+    # calculate score when player loses
+    def calculateScoreLose(self):
+       # player gives up without using letters or guessing 
+        if self.currentGuess == ["-", "-", "-", "-"]:
+            totalFrequencyOfWord = sum(self.letterFrequencies[letter] for letter in self.currentWord)
+            self.score = -1 * round(totalFrequencyOfWord,2)
+        # player gives up using letters and guesses
+        else: 
+            totalFrequencyOfWord = sum(self.letterFrequencies[letter] for letter in self.currentWord)
+            sumFrequencyOfGuess = sum(self.letterFrequencies[letter] for letter in self.currentGuess)
+            self.score = -1 * round(totalFrequencyOfWord - sumFrequencyOfGuess,2)
+        game = Game(self.currentWord, "Gave Up", self.badGuesses, self.missedLetters, self.score)
+        self.listOfGames.append(game)
+    
+    # display game report
+    def displayGameReport(self):
+        print("\n++")
+        print("++ Game Report")
+        print("++\n")
+        print("Game    Word    Status     Bad Guesses    Missed Letters    Score")
+        print("----    ----    -------    -----------    --------------    ------")
+        # loop through the list of games played and display each stat
+        for index, game in enumerate(self.listOfGames):
+            print(f"{index+1}       {game.word}    {game.status}    {game.badGuesses}              {game.missedLetters}                 {game.score}")
+        # sum all the score
+        print("\nFinal Score: " + str(sum(game.score for game in self.listOfGames)))
