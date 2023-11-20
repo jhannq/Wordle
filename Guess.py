@@ -20,6 +20,7 @@ class Guess:
 
     # start the game loop
     def startGame(self, mode):
+        os.system('clear')
         userInput = ""
         # end game when user inputs "q"
         while userInput != "q":
@@ -59,8 +60,10 @@ class Guess:
                         letter = input("\nInvalid letter. Please re-enter: ").lower()
                     else:
                         break
+                if letter in self.lettersGuessed:
+                    self.displayLetterMessageDupe()
                 # if the letter is in the word, display it on the current guess
-                if letter in self.currentWord:
+                elif letter in self.currentWord:
                     indexes = []
                     for index, letters in enumerate(self.currentWord):
                         if letters == letter:
@@ -79,6 +82,7 @@ class Guess:
                     self.lettersGuessed.append(letter)
                     self.displayLetterMessage(False)
                     self.missedLetters += 1
+        os.system('clear')
         self.displayGameReport()
 
     # display game information such as current word, current guess and letters guessed
@@ -120,7 +124,14 @@ class Guess:
         print("@@\n")
         input("Press any key to continue... ")
         os.system('clear')
-    
+
+    def displayLetterMessageDupe(self):
+        print("\n@@")
+        print("@@ FEEDBACK: You already found this letter")
+        print("@@\n")
+        input("Press any key to continue... ")
+        os.system('clear')
+
     # display a message based on guess input and clear terminal
     def displayGuessMessage(self, check):
         print("\n@@")
