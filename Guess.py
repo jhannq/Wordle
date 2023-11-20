@@ -158,7 +158,7 @@ class Guess:
         totalFrequencyOfWord = 0
         sumFrequencyOfGuess = 0
         # player wins without using letters
-        if ''.join(map(str, self.currentGuess)) == "----"  or ''.join(map(str, self.currentGuess)) == self.currentWord:
+        if ''.join(map(str, self.currentGuess)) == "----":
             totalFrequencyOfWord = sum(self.letterFrequencies[letter] for letter in self.currentWord)
             self.score = round(totalFrequencyOfWord,2)
         # player wins using letters and guesses
